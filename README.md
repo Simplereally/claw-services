@@ -1,61 +1,131 @@
-# Claw Services - Agent Infrastructure Layer
+# Claw Services 🦀
 
-> Built by Maya (OpenClaw) for the Colosseum Agent Hackathon
+Agent services backend for the Colosseum Agent Hackathon. Provides Tweet and Web Scraping APIs via Playwright.
 
-## What is this?
+## Endpoints
 
-Claw Services provides capabilities other AI agents need but often can't access:
-
-- **X/Twitter Automation** - Post tweets via headless browser (bypasses API rate limits)
-- **Email Services** - Send emails via AgentMail
-- **Web Scraping** - Browser-based data extraction
-
-All services are payable via x402 micropayments in USDC on Solana.
-
-## Why?
-
-Most hackathon agents are building DeFi, trading, or analytics tools. They need to:
-- Post updates to X/Twitter
-- Send outreach emails
-- Scrape web data
-
-But they don't have these capabilities built in. Claw Services fills that gap.
-
-## Quick Start
+### `GET /status`
+Health check endpoint.
 
 ```bash
-# Check service status
-curl https://claw-services.fly.dev/status
-
-# Post a tweet (requires x402 payment)
-curl -X POST https://claw-services.fly.dev/api/tweet \
-  -H "Content-Type: application/json" \
-  -H "X-402-Payment: <payment-header>" \
-  -d '{"text": "Hello from an AI agent!"}'
+curl https://your-app.fly.dev/status
 ```
 
-## API Endpoints
+**Response:**
+```json
+{
+  "status": "ok",
+  "service": "claw-services",
+  "version": "1.0.0",
+  "timestamp": "2026-02-09T18:57:01.171Z",
+  "uptime": 2.93
+}
+```
 
-| Endpoint | Method | Description | Price |
-|----------|--------|-------------|-------|
-| `/status` | GET | Service health check | Free |
-| `/api/tweet` | POST | Post a tweet | 0.01 USDC |
-| `/api/email` | POST | Send an email | 0.005 USDC |
-| `/api/scrape` | POST | Scrape a webpage | 0.02 USDC |
+### `POST /api/tweet`
+Post a tweet to X/Twitter using Playwright browser automation.
 
-## Solana Integration
+**Request:**
+```json
+{
+  "text": "Hello from Claw Services! 🦀",
+  "ct0": "your_ct0_cookie",
+  "auth_token": "your_auth_token"
+}
+```
 
-- Accepts USDC payments via x402 protocol
-- Uses AgentWallet for wallet operations
-- Logs all service calls on-chain via memo program
+Credentials can be provided in the request body or set as environment variables (`CT0`, `AUTH_TOKEN`).
 
-## Built During Hackathon
+**Response:**
+```json
+{
+  "success": true,
+  "url": "https://x.com/user/status/123456789"
+}
+```
 
-This project demonstrates:
-- Agent-to-agent commerce
-- x402 micropayments
-- Browser automation capabilities
-- Real infrastructure that other agents can use
+### `POST /api/scrape`
+Scrape web pages using Playwright.
+
+**Request:**
+```json
+{
+  "url": "https://example.com",
+  "selector": "#content",      // optional - specific element to extract
+  "waitFor": ".loaded",        // optional - wait for selector before scraping
+  "timeout": 30000,            // optional - timeout in ms (default: 30000)
+  "screenshot": false          // optional - include base64 screenshot
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "url": "https://example.com",
+  "title": "Example Domain",
+  "content": "This domain is for use in illustrative examples...",
+  "html": "<div>...</div>",
+  "screenshot": "base64..."    // only if requested
+}
+```
+
+## Deployment
+
+### Fly.io
+
+```bash
+# Install flyctl
+curl -L https://fly.io/install.sh | sh
+
+# Login
+fly auth login
+
+# Launch (first time)
+fly launch
+
+# Deploy
+fly deploy
+
+# Set secrets
+fly secrets set CT0=your_ct0_cookie AUTH_TOKEN=your_auth_token
+```
+
+### Docker (Local)
+
+```bash
+docker build -t claw-services .
+docker run -p 3000:3000 -e CT0=xxx -e AUTH_TOKEN=xxx claw-services
+```
+
+### Development
+
+```bash
+npm install
+npx playwright install chromium
+npm run dev
+```
+
+## Environment Variables
+
+| Variable | Description |
+|----------|-------------|
+| `PORT` | Server port (default: 3000) |
+| `CT0` | Twitter ct0 cookie (optional, can pass in request) |
+| `AUTH_TOKEN` | Twitter auth_token cookie (optional, can pass in request) |
+
+## Getting Twitter Cookies
+
+1. Log into X/Twitter in your browser
+2. Open DevTools → Application → Cookies → x.com
+3. Copy `ct0` and `auth_token` values
+
+## Tech Stack
+
+- Node.js 22
+- TypeScript
+- Express
+- Playwright (Chromium)
 
 ## License
 

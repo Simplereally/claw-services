@@ -1,0 +1,30 @@
+{
+  "name": "claw-services",
+  "version": "1.0.0",
+  "description": "Agent services backend - Tweet and Scrape APIs via Playwright",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "tsx watch src/index.ts"
+  },
+  "keywords": [
+    "agent",
+    "playwright",
+    "twitter",
+    "scraping"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^17.2.4",
+    "express": "^4.21.2",
+    "playwright": "^1.50.1"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.13.1",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.3"
+  }
+}
